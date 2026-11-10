@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Realidad Aumentada con Video</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.5.0/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <style>
+      body { margin: 0; overflow: hidden; }
+      #controles {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 999;
+        display: flex;
+        gap: 10px;
+      }
+      #controles[hidden], #controles button[hidden] { display: none; }
+      #controles button {
+        padding: 12px 24px;
+        background: #000000cc;
+        color: white;
+        border: 2px solid white;
+        border-radius: 30px;
+        font-family: sans-serif;
+        font-size: 16px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="controles" hidden>
+      <button id="btn-animacion">⏸ Pausar animación</button>
+      <button id="btn-clip">🎬 Animación</button>
+    </div>
+
+    <a-scene
+      mindar-image="imageTargetSrc: ./targets.mind;"
+      color-space="sRGB"
+      renderer="colorManagement: true; physicallyCorrectLights: true"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+    >
+      <a-assets>
+        <a-asset-item id="mi-modelo" src="./modelo.glb"></a-asset-item>
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity id="target" mindar-image-target="targetIndex: 0">
+        <!-- Ajusta scale/rotation según el tamaño y orientación de tu modelo -->
+        <a-gltf-model
+          id="modelo"
+          src="#mi-modelo"
+          position="0 0 0"
+          rotation="90 0 0"
+          scale="0.5 0.5 0.5"
+        ></a-gltf-model>
+      </a-entity>
+    </a-scene>
+
+    <script>
+      const modelo = document.querySelector("#modelo");
+      const controles = document.querySelector("#controles");
+      const btnAnimacion = document.querySelector("#btn-animacion");
+      const btnClip = document.querySelector("#btn-clip");
+
+      let clips = [];
+      let clipActual = 0;
+      let animando = true;
+
+      // Lee las animaciones del GLB; sin ellas, los controles quedan ocultos.
+      modelo.addEventListener("model-loaded", () => {
+        const mesh = modelo.getObject3D("mesh");
+        clips = mesh && mesh.animations ? mesh.animations.map((a) => a.name) : [];
+        if (clips.length === 0) return;
+
+        modelo.setAttribute("animation-mixer", { clip: clips[0], loop: "repeat" });
+        btnClip.textContent = "🎬 Animación: " + clips[0];
+        btnClip.hidden = clips.length < 2;
+        controles.hidden = false;
+      });
+
+      btnAnimacion.addEventListener("click", () => {
+        animando = !animando;
+        modelo.setAttribute("animation-mixer", "timeScale", animando ? 1 : 0);
+        btnAnimacion.textContent = animando ? "⏸ Pausar animación" : "▶ Reanudar animación";
+      });
+
+      btnClip.addEventListener("click", () => {
+        clipActual = (clipActual + 1) % clips.length;
+        modelo.setAttribute("animation-mixer", "clip", clips[clipActual]);
+        btnClip.textContent = "🎬 Animación: " + clips[clipActual];
+      });
+    </script>
+      btnAnimacion.addEventListener("click", () => {
+        animando = !animando;
+        modelo.setAttribute("animation-mixer", "timeScale", animando ? 1 : 0);
+        btnAnimacion.textContent = animando ? "⏸ Pausar animación" : "▶ Reanudar animación";
+      });
+
+      btnClip.addEventListener("click", () => {
+        clipActual = (clipActual + 1) % clips.length;
+        modelo.setAttribute("animation-mixer", "clip", clips[clipActual]);
+        btnClip.textContent = "🎬 Animación: " + clips[clipActual];
+      });
+    </script>
+  </body>
+</html>
