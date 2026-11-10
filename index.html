@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Realidad Aumentada con Video</title>
+    <title>Realidad Aumentada con Animación</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.5.0/dist/aframe-extras.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
@@ -44,13 +44,13 @@
       device-orientation-permission-ui="enabled: false"
     >
       <a-assets>
-        <a-asset-item id="mi-modelo" src="./modelo.glb"></a-asset-item>
+        <a-asset-item id="mi-modelo" src="./miku.glb"></a-asset-item>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity id="target" mindar-image-target="targetIndex: 0">
-        <!-- Ajusta scale/rotation según el tamaño y orientación de tu modelo -->
+        <!-- Ajusta scale/rotación según el tamaño y orientación del modelo -->
         <a-gltf-model
           id="modelo"
           src="#mi-modelo"
